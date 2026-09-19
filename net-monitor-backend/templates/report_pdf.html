@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ meta.title }}</title>
+  <style>
+    {% if meta.font_face_url %}
+    @font-face {
+      font-family: "LocalSimHei";
+      src: url("{{ meta.font_face_url }}");
+    }
+
+    html, body {
+      font-family: "LocalSimHei", "Microsoft YaHei", "SimHei", sans-serif;
+    }
+    {% endif %}
+    {% include 'report_pdf.css' %}
+  </style>
+</head>
+<body>
+  <div class="report-paper">
+    <section class="cover-section">
+      <h1 class="report-title">{{ meta.title }}</h1>
+      <div class="report-meta">
+        <p><strong>时间范围：</strong>{{ meta.start_time_text }} 至 {{ meta.end_time_text }}</p>
+        <p><strong>生成时间：</strong>{{ meta.generated_at }}</p>
+        <p><strong>系统名称：</strong>{{ meta.system_name }}</p>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-label">网络在线率</div>
+          <div class="summary-value success">{{ report.summary.uptime }}%</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">告警总数</div>
+          <div class="summary-value {{ 'danger' if report.summary.alertCount else 'success' }}">
+            {{ report.summary.alertCount }}
+          </div>
+        </div>
+        <div class="summary-card wide">
+          <div class="summary-label">最繁忙设备</div>
+          <div class="summary-text">{{ report.summary.busyDevice }}</div>
+        </div>
+        <div class="summary-card wide">
+          <div class="summary-label">核心结论</div>
+          <div class="summary-text">{{ report.summary.conclusion }}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="report-section">
+      <h2 class="section-title">1. 网络概况</h2>
+      <div class="two-column">
+        <div class="chart-panel">
+          <h3 class="panel-title">设备状态分布</h3>
+          {% if charts.overviewPie %}
+          <img src="{{ charts.overviewPie }}" alt="设备状态分布图" />
+          {% else %}
+          <div class="empty-panel">当前时间范围内暂无设备状态图表数据</div>
+          {% endif %}
+        </div>
+        <div class="card-panel">
+          <h3 class="panel-title">{{ report.overview.selectedLayerLabel }}</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>名称</th>
+                <th>IP 地址</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if report.overview.layerDevices %}
+                {% for item in report.overview.layerDevices %}
+                <tr>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.ip }}</td>
+                  <td>
+                    <span class="tag {{ 'success' if item.status == 'online' else 'danger' }}">
+                      {{ '在线' if item.status == 'online' else '离线' }}
+                    </span>
+                  </td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="3">当前层级暂无设备数据</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="report-section">
+      <h2 class="section-title">2. 性能分析 (Top 5 高负载)</h2>
+      <div class="two-column">
+        <div class="card-panel">
+          <h3 class="panel-title">CPU 利用率 Top 5</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>设备</th>
+                <th>平均(%)</th>
+                <th>峰值(%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if report.performance.topCpu %}
+                {% for item in report.performance.topCpu %}
+                <tr>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.avg }}</td>
+                  <td>{{ item.peak }}</td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="3">暂无 CPU 性能数据</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-panel">
+          <h3 class="panel-title">内存利用率 Top 5</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>设备</th>
+                <th>平均(%)</th>
+                <th>峰值(%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if report.performance.topMem %}
+                {% for item in report.performance.topMem %}
+                <tr>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.avg }}</td>
+                  <td>{{ item.peak }}</td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="3">暂无内存性能数据</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="analysis-panel">
+        <strong>分析结论：</strong>{{ report.performance.conclusion }}
+      </div>
+    </section>
+
+    <section class="report-section">
+      <h2 class="section-title">3. 接口流量分析</h2>
+      <div class="card-panel">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>所属设备</th>
+              <th>接口名称</th>
+              <th>平均速率(Mbps)</th>
+              <th>峰值速率(Mbps)</th>
+              <th>峰值时间</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if report.traffic.topInterfaces %}
+              {% for item in report.traffic.topInterfaces %}
+              <tr>
+                <td>{{ item.device }}</td>
+                <td>{{ item.interface }}</td>
+                <td>{{ item.avgRate }}</td>
+                <td>{{ item.peakRate }}</td>
+                <td>{{ item.peakTime }}</td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="5">暂无接口流量数据</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+      <div class="analysis-panel">
+        <strong>拥塞风险评估：</strong>{{ report.traffic.conclusion }}
+      </div>
+    </section>
+
+    <section class="report-section">
+      <h2 class="section-title">4. 告警统计分析</h2>
+      <div class="two-column">
+        <div class="chart-panel">
+          <h3 class="panel-title">告警类型分布</h3>
+          {% if charts.alertsBar %}
+          <img src="{{ charts.alertsBar }}" alt="告警类型分布图" />
+          {% else %}
+          <div class="empty-panel">当前时间范围内未检测到告警</div>
+          {% endif %}
+        </div>
+
+        <div class="card-panel">
+          <h3 class="panel-title">未恢复告警 (Top 5)</h3>
+          {% if report.alerts.unresolved %}
+          <ol class="timeline">
+            {% for item in report.alerts.unresolved %}
+            <li>
+              <strong>{{ item.time }}</strong><br />
+              {{ item.device }}：{{ item.message }}
+            </li>
+            {% endfor %}
+          </ol>
+          {% else %}
+          <div class="empty-panel">当前时间范围内没有未恢复告警</div>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <section class="report-section">
+      <h2 class="section-title">5. 网络拓扑快照</h2>
+      {% if report.topology.hasSnapshot %}
+      <div class="chart-panel topology-visual-panel">
+        <h3 class="panel-title">Topology View</h3>
+        {% if charts.topologyGraph %}
+        <img class="topology-graph-image" src="{{ charts.topologyGraph }}" alt="Topology Graph" />
+        {% else %}
+        <div class="empty-panel">Topology snapshot is available, but the graph image could not be generated.</div>
+        {% endif %}
+      </div>
+      <div class="topology-summary-grid">
+        <div class="topology-summary-item">
+          <span class="topology-summary-value">{{ report.topology.summary.nodeCount }}</span>
+          <span class="topology-summary-label">节点数量</span>
+        </div>
+        <div class="topology-summary-item">
+          <span class="topology-summary-value">{{ report.topology.summary.linkCount }}</span>
+          <span class="topology-summary-label">链路数量</span>
+        </div>
+        <div class="topology-summary-item">
+          <span class="topology-summary-value" style="color: #67C23A;">{{ report.topology.summary.onlineCount }}</span>
+          <span class="topology-summary-label">在线节点</span>
+        </div>
+        <div class="topology-summary-item">
+          <span class="topology-summary-value" style="color: #F56C6C;">{{ report.topology.summary.offlineCount }}</span>
+          <span class="topology-summary-label">离线节点</span>
+        </div>
+      </div>
+
+      <div class="card-panel">
+        <h3 class="panel-title">核心链路摘要</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>源设备</th>
+              <th>目标设备</th>
+              <th>链路标签</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if report.topology.coreLinks %}
+              {% for item in report.topology.coreLinks %}
+              <tr>
+                <td>{{ item.sourceName }}</td>
+                <td>{{ item.targetName }}</td>
+                <td>{{ item.edgeLabel }}</td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="3">当前拓扑快照中暂无可展示的核心链路摘要</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-panel">当前还没有可用的拓扑快照，请先在拓扑页面执行刷新。</div>
+      {% endif %}
+    </section>
+
+    <section class="report-section">
+      <h2 class="section-title">6. 智能运维建议</h2>
+      <ul class="suggestion-list">
+        {% for suggestion in report.suggestions %}
+        <li class="suggestion-item">{{ suggestion }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+  </div>
+</body>
+</html>

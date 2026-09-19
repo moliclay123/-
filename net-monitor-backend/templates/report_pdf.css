@@ -1,0 +1,253 @@
+@page {
+  size: A4;
+  margin: 14mm;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  color: #303133;
+  background: #ffffff;
+  font-family: "Microsoft YaHei", "SimHei", sans-serif;
+  font-size: 12px;
+  line-height: 1.6;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.report-paper {
+  width: 100%;
+}
+
+.cover-section {
+  text-align: center;
+  padding: 18mm 0 16mm;
+  border-bottom: 2px dashed #e5e7eb;
+}
+
+.report-title {
+  margin: 0 0 18px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #303133;
+}
+
+.report-meta {
+  color: #606266;
+  margin-bottom: 28px;
+}
+
+.report-meta p {
+  margin: 8px 0;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  text-align: left;
+}
+
+.summary-card {
+  border: 1px solid #ebeef5;
+  background: #fafbfd;
+  border-radius: 10px;
+  padding: 14px 16px;
+  min-height: 84px;
+}
+
+.summary-card.wide {
+  grid-column: 1 / -1;
+}
+
+.summary-label {
+  color: #909399;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.summary-value {
+  color: #303133;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.summary-value.success {
+  color: #67C23A;
+}
+
+.summary-value.danger {
+  color: #F56C6C;
+}
+
+.summary-text {
+  font-size: 13px;
+  color: #303133;
+}
+
+.report-section {
+  margin-top: 20px;
+  page-break-inside: avoid;
+}
+
+.section-title {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-left: 5px solid #409EFF;
+  background: #f9fafc;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.chart-panel,
+.card-panel,
+.analysis-panel {
+  border: 1px solid #ebeef5;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 14px;
+}
+
+.chart-panel img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.topology-visual-panel {
+  margin-bottom: 14px;
+}
+
+.topology-graph-image {
+  min-height: 220px;
+  object-fit: contain;
+}
+
+.panel-title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #303133;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid #ebeef5;
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  word-break: break-word;
+}
+
+.data-table th {
+  background: #f5f7fa;
+  color: #606266;
+  font-weight: 700;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.tag.success {
+  background: rgba(103, 194, 58, 0.12);
+  color: #67C23A;
+}
+
+.tag.danger {
+  background: rgba(245, 108, 108, 0.12);
+  color: #F56C6C;
+}
+
+.analysis-panel {
+  margin-top: 12px;
+  background: #fdf6ec;
+  border-color: #f5dab1;
+  color: #a36a00;
+}
+
+.timeline {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.timeline li {
+  margin-bottom: 10px;
+}
+
+.topology-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.topology-summary-item {
+  border: 1px solid #ebeef5;
+  border-radius: 10px;
+  background: #fafbfd;
+  padding: 14px;
+}
+
+.topology-summary-value {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.topology-summary-label {
+  color: #909399;
+  font-size: 12px;
+}
+
+.empty-panel {
+  min-height: 120px;
+  border: 1px dashed #dcdfe6;
+  border-radius: 10px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #909399;
+  text-align: center;
+  padding: 20px;
+}
+
+.suggestion-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.suggestion-item {
+  margin-bottom: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #f5dab1;
+  background: #fdf6ec;
+  color: #a36a00;
+}
